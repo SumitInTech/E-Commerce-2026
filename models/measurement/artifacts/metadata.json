@@ -1,0 +1,85 @@
+{
+  "best_model": "RandomForest",
+  "targets": [
+    "chest",
+    "waist",
+    "hip"
+  ],
+  "feature_names": [
+    "front_chest_w",
+    "side_chest_d",
+    "c_chest_ramanujan",
+    "front_waist_w",
+    "side_waist_d",
+    "c_waist_ramanujan",
+    "front_hip_w",
+    "side_hip_d",
+    "c_hip_ramanujan",
+    "front_shoulder_w",
+    "front_thigh_w",
+    "front_calf_w",
+    "height_cm",
+    "weight_kg",
+    "bmi",
+    "ponderal_index",
+    "gender_code",
+    "waist_to_hip_ratio",
+    "chest_to_waist_ratio"
+  ],
+  "testb_metrics": {
+    "mean_mae": 3.0452465896418226,
+    "mae_per_target": {
+      "chest": 2.985075539519514,
+      "waist": 3.65767594871879,
+      "hip": 2.492988280687164
+    },
+    "r2_per_target": {
+      "chest": 0.9078882985947803,
+      "waist": 0.8934836621105101,
+      "hip": 0.9175211883315748
+    }
+  },
+  "training_samples": 2018,
+  "testb_samples": 400,
+  "all_benchmarks": {
+    "Ridge_alpha_1.0": {
+      "mean_mae": 3.0470542907714844,
+      "mae_per_target": {
+        "chest": 2.843318223953247,
+        "waist": 4.010237216949463,
+        "hip": 2.287607431411743
+      },
+      "r2_per_target": {
+        "chest": 0.9189675450325012,
+        "waist": 0.8680240511894226,
+        "hip": 0.9301407337188721
+      }
+    },
+    "Ridge_alpha_10.0": {
+      "mean_mae": 3.0453744729359946,
+      "mae_per_target": {
+        "chest": 2.848247766494751,
+        "waist": 3.993385076522827,
+        "hip": 2.2944905757904053
+      },
+      "r2_per_target": {
+        "chest": 0.9187269806861877,
+        "waist": 0.868138313293457,
+        "hip": 0.9298349618911743
+      }
+    },
+    "RandomForest": {
+      "mean_mae": 3.0452465896418226,
+      "mae_per_target": {
+        "chest": 2.985075539519514,
+        "waist": 3.65767594871879,
+        "hip": 2.492988280687164
+      },
+      "r2_per_target": {
+        "chest": 0.9078882985947803,
+        "waist": 0.8934836621105101,
+        "hip": 0.9175211883315748
+      }
+    }
+  }
+}
