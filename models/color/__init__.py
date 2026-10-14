@@ -1,1 +1,0 @@
-"""Color model package initialization."""
