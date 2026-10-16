@@ -43,6 +43,8 @@ class BodyMeasurementResponse(BaseModel):
     recommended_pant_size: str = "32"
     recommended_pant_waist_inches: int = 32
     body_morphology: str = "Athletic V-Taper"
+    detected_gender: Optional[str] = "male"
+    gender_morphology_label: Optional[str] = "Male (Broad Shoulder / V-Taper)"
     status: str = "success"
     inference_mode: str = "biometric_prior"
     predictions: Optional[Dict[str, float]] = None
@@ -57,6 +59,8 @@ class BodyMeasurementResponse(BaseModel):
             }
         if not self.recommended_shirt_size:
             self.recommended_shirt_size = self.recommended_standard_size
+        if not self.detected_gender:
+            self.detected_gender = self.gender
 
 
 class FitAdviceRequest(BaseModel):
@@ -82,6 +86,8 @@ class FitAdviceResponse(BaseModel):
     primary_ease_cm: Optional[float] = None
     weighted_average_ease_cm: Optional[float] = None
     return_risk_score: float = 0.05
+    return_risk_label: Optional[str] = None
+    evaluated_garment_size: Optional[str] = None
     advice_note: str = ""
     size_advice: Optional[str] = None
     verdict: Optional[str] = None
@@ -107,6 +113,7 @@ class ColorPaletteRequest(BaseModel):
     g: Optional[int] = Field(None, ge=0, le=255)
     b: Optional[int] = Field(None, ge=0, le=255)
     ita: Optional[float] = None
+    gender: Optional[str] = Field("all", description="'male', 'female', or 'all'")
     image_base64: Optional[str] = Field(None, description="Uploaded portrait, selfie, or skin crop image in base64")
 
 
@@ -119,6 +126,7 @@ class ColorPaletteResponse(BaseModel):
     input_hex: str
     detected_from_image: bool = False
     detected_skin_hex: Optional[str] = None
+    target_gender: Optional[str] = "all"
     skin_tone_category: str
     ita_angle: float
     ita_category: Optional[str] = None

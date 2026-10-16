@@ -5,12 +5,15 @@ and validation of infrastructure secrets and microservice ports.
 """
 import os
 from typing import List
-from pydantic_settings import BaseSettings
-from pydantic import ConfigDict
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    model_config = ConfigDict(extra="ignore", env_file=".env", env_file_encoding="utf-8")
+    model_config = SettingsConfigDict(
+        extra="ignore",
+        env_file=(".env", "../.env"),
+        env_file_encoding="utf-8"
+    )
 
     PROJECT_NAME: str = "Snitch Luxe AI E-Commerce Platform"
     VERSION: str = "2.5.0"

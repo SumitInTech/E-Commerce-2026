@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "open-design": {
+      "command": "npx",
+      "args": ["-y", "@open-design/mcp-server@latest"],
+      "description": "Open Design MCP Server for automated UI/UX design tokens and layout rendering"
+    },
+    "antigravity-ui-studio": {
+      "command": "node",
+      "args": [".agents/plugins/antigravity-ui-designer/server.js"],
+      "description": "Antigravity Luxury Cyberpunk & Streetwear Design Engine"
+    }
+  }
+}

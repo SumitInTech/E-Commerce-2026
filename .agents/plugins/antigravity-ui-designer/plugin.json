@@ -1,0 +1,7 @@
+{
+  "name": "antigravity-ui-designer",
+  "version": "1.0.0",
+  "description": "Next-Gen Luxury & Cyber-Futuristic E-Commerce UI/UX Design System Plugin for Antigravity",
+  "author": "Antigravity Studio",
+  "entry": "server.js"
+}

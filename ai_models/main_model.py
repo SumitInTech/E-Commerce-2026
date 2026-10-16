@@ -32,6 +32,9 @@ import asyncio
 from typing import Dict, Any, Optional, List, Union
 import numpy as np
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+
 # Ensure parent directory is in sys.path for standalone invocation
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 PARENT_DIR = os.path.dirname(CURRENT_DIR)

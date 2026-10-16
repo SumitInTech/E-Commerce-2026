@@ -58,6 +58,41 @@ def add_to_cart_by_session(
     )
 
 
+@router.get("/cart", response_model=CartResponse)
+def get_cart_by_query(
+    session_id: Optional[str] = Query("cart_default_session"),
+    user_id: Optional[int] = Query(None),
+    db: Session = Depends(get_db)
+):
+    """Retrieves active shopping cart using query parameters (?session_id=... or ?user_id=...)."""
+    cart = order_service.get_or_create_cart(db, user_id=user_id, session_id=session_id)
+    items_dto = []
+    subtotal = 0.0
+    for item in cart.items:
+        prod = db.query(Product).filter(Product.id == item.product_id).first()
+        p_name = prod.name if prod else "Apparel"
+        p_price = prod.price if prod else 1499.0
+        tot = p_price * item.quantity
+        subtotal += tot
+        items_dto.append(CartItemResponse(
+            id=item.id,
+            product_id=item.product_id,
+            product_name=p_name,
+            size_label=item.size_label,
+            quantity=item.quantity,
+            unit_price=p_price,
+            total_price=tot
+        ))
+    return CartResponse(
+        id=cart.id,
+        session_id=cart.session_id,
+        items=items_dto,
+        subtotal=subtotal,
+        total_amount=subtotal,
+        total=subtotal
+    )
+
+
 @router.get("/cart/{user_ref}", response_model=CartResponse)
 def get_cart(user_ref: str, db: Session = Depends(get_db)):
     """Retrieves active shopping cart for a user ID or session ID."""
