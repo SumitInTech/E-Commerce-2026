@@ -22,6 +22,7 @@ router = APIRouter(prefix="/admin", tags=["Customer & Admin Service"])
 
 
 @router.get("/metrics", response_model=AdminMetricsResponse)
+@router.get("/analytics/metrics", response_model=AdminMetricsResponse)
 def get_metrics(db: Session = Depends(get_db)):
     """Retrieves high-level platform GMV, order counts, and AI return-rate mitigation metrics."""
     return admin_controller.get_metrics(db)

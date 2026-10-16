@@ -84,8 +84,28 @@ class ChatbotService:
         if not sources:
             sources = ["Snitch Store Policies (Apparel Return & Care Guidelines)"]
 
-        # If order context was detected, enrich the answer with ground-truth fulfillment data
-        if order_context:
+        # Check if query is purely a standalone greeting (e.g. 'hi', 'hey there', 'hello')
+        q_clean = req.query.strip().lower()
+        clean_words = [w.strip("!?,.") for w in q_clean.split()]
+        is_pure_greeting = (
+            len(clean_words) <= 2 and
+            any(w in ["hi", "hii", "hey", "hello", "yo", "greetings", "namaste", "sup", "high"] for w in clean_words)
+        )
+
+        if is_pure_greeting:
+            final_answer = (
+                "👋 Hello! I'm your **Snitch AI Fashion Stylist & Advisory Assistant**.\n\n"
+                "I can help you with:\n"
+                "• **Real-Time Order Tracking** (e.g. *\"Where is my order ORD-SNITCH-88219?\"*)\n"
+                "• **AI Sizing & Ease Allowances** (e.g. *\"What is ease and return risk?\"*)\n"
+                "• **Skin Tone & Color Harmonies** (e.g. *\"What colors suit warm olive skin tone?\"*)\n"
+                "• **Shipping & Delivery Timelines** (e.g. *\"How long does delivery take?\"*)\n"
+                "• **Store Return & Exchange Guarantees** (e.g. *\"What is your refund timeframe?\"*)\n"
+                "• **Luxury Fabric Care** (e.g. *\"How do I wash French linen?\"*)\n\n"
+                "How can I assist your wardrobe today?"
+            )
+            sources = ["Snitch AI Concierge Assistant"]
+        elif order_context:
             prefix = (
                 f"📦 **Order Status for #{order_context['order_number']}**\n"
                 f"• Status: **{order_context['status'].upper()}**\n"
@@ -93,8 +113,79 @@ class ChatbotService:
                 f"• Items: {order_context['items']}\n"
                 f"• Total: {order_context['total_amount']}\n\n"
             )
-            final_answer = prefix + final_answer
+            final_answer = prefix + (
+                "Your package is in transit via Delhivery Air Express with guaranteed door delivery. "
+                "You can inspect garments upon delivery and enjoy our 30-day sizing exchange guarantee!"
+            )
             sources.append("Live Platform Database (orders table)")
+        elif re.search(r"\b(skin\s*tone|complexion|undertone|ita\b|color\s*palette|seasonal\s*palette|what\s*colors?\s*suit|cielab|autumn|spring|summer|winter)\b", req.query, re.IGNORECASE):
+            final_answer = (
+                "🎨 **AI Skin-Tone & Wardrobe Color Harmony (Model 3)**\n\n"
+                "We calculate your dermal undertones using **CIE L*a*b* Photometric Space** and the **Individual Typology Angle (ITA°)** to match you with your ideal seasonal palette:\n\n"
+                "• **Medium, Honey & Olive (Autumn):** Earthy terracotta, burnt orange, golden olive, warm chocolate, and espresso.\n"
+                "• **Bronze & Deep Complexions (Winter/Deep Autumn):** Royal cobalt, pure obsidian onyx, optical white, and emerald green.\n"
+                "• **Fair to Light (Summer/Spring):** Slate grey, soft sage, powder blue, and muted lavender.\n\n"
+                "💡 **How to test your skin tone right now:**\n"
+                "1. Click the **'AI COLOR PALETTE'** button on the top navigation bar.\n"
+                "2. Upload a selfie or pick one of our 6 preset skin swatches.\n"
+                "3. Select your department (**Men's Streetwear** or **Women's Luxe**) to view matched catalog pieces with direct harmony scores!"
+            )
+            sources = ["Model 3: Photometric CIELAB Skin-Tone Engine"]
+        elif re.search(r"\b(shipping|delivery|courier|delhivery|how\s*long|transit|timeline|dispatch)\b", req.query, re.IGNORECASE):
+            final_answer = (
+                "🚀 **Snitch Express Shipping & Logistics**\n\n"
+                "• **Metro Cities (Delhi, Mumbai, Bengaluru):** 2 to 3 business days via Delhivery Air Express.\n"
+                "• **Rest of India:** Delivered in 3 to 5 business days.\n"
+                "• **Free Express Shipping:** 100% free on prepaid orders exceeding ₹1,499.\n"
+                "• **Live Order Lookup:** Provide your order number (e.g. `ORD-SNITCH-88219`) to view live courier status!"
+            )
+            sources = ["Snitch Express Logistics Guidelines"]
+        elif re.search(r"\b(return\s*risk|what\s*is\s*ease|negative\s*ease|ease\s*score|snug\s*garment|size\s*up|size\s*down)\b", req.query, re.IGNORECASE):
+            final_answer = (
+                "📐 **Kinematic Ease & Return Risk Explained**\n\n"
+                "• **What is Ease?**\n"
+                "  $$\\text{Ease} = \\text{Garment Spec} - \\text{Body Circumference}$$\n"
+                "  - **Positive Ease (+3 to +6 cm):** Comfortable anatomical drape allowing natural torso expansion and reach.\n"
+                "  - **Negative Ease (< 0 cm):** Garment is tighter than your body, creating tension lines.\n\n"
+                "• **What is Return Risk?**\n"
+                "  Indicates the statistical probability that a garment will be returned due to poor fit.\n"
+                "  - **< 20% (Low Risk):** Confident fit with optimal drape.\n"
+                "  - **> 70% (High Risk):** Negative ease; sizing up to the next size is recommended."
+            )
+            sources = ["Model 2: Garment Kinematic Ease Engine"]
+        elif re.search(r"\b(return|exchange|refund|money\s*back|policy)\b", req.query, re.IGNORECASE):
+            final_answer = (
+                "🔄 **Snitch 30-Day Return & Exchange Policy**\n\n"
+                "• **30-Day Sizing Guarantee:** Free exchanges for 30 days post-delivery if the fit does not meet expectations.\n"
+                "• **AI Fit Waiver:** If you used our AI Fit Lab prior to purchasing and experienced a sizing discrepancy, return shipping is 100% free with an additional 10% wardrobe credit.\n"
+                "• **Refund Processing:** Approved refunds are initiated back to the original payment source within 3 to 5 business days after warehouse inspection."
+            )
+            sources = ["Snitch Store Policies (Apparel Return & Care Guidelines)"]
+        else:
+            # Real-Time Product Catalog Recommendations if asking about apparel
+            garment_match = re.search(r"\b(shirt|tee|t-shirt|trouser|pant|blazer|jacket|collection|drop|buy|shop|apparel|product|recommend)\b", req.query, re.IGNORECASE)
+            if garment_match:
+                try:
+                    from backend.catalog.models.catalog_model import Product
+                    query_term = garment_match.group(1).lower()
+                    type_map = {
+                        "shirt": "shirt",
+                        "tee": "t_shirt",
+                        "t-shirt": "t_shirt",
+                        "trouser": "pants",
+                        "pant": "pants",
+                        "blazer": "jacket",
+                        "jacket": "jacket"
+                    }
+                    g_type = type_map.get(query_term)
+                    matched_products = db.query(Product).filter(Product.garment_type == g_type).limit(3).all() if g_type else db.query(Product).limit(3).all()
+                    if matched_products:
+                        prod_lines = [f"• **{p.name}** — ₹{p.price:,.2f} (*{p.fabric}*)" for p in matched_products]
+                        product_prefix = "🛍️ **Live Streetwear Catalog Recommendations:**\n" + "\n".join(prod_lines) + "\n\n"
+                        final_answer = product_prefix + (final_answer if final_answer else "Let me know your height and weight in the AI Fit Lab for tailored sizing!")
+                        sources.append("Live Platform Database (products table)")
+                except Exception:
+                    pass
 
         # Save assistant message
         bot_msg = ChatMessage(session_id=session_id, role="assistant", content=final_answer)

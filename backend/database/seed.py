@@ -156,3 +156,34 @@ def seed_database(db: Session) -> None:
         ]
         db.add_all(size_specs)
         db.commit()
+
+    # 4. Seed sample order for live tracking demonstration if not present
+    from backend.order.models.order_model import Order, OrderItem, OrderStatus
+    if db.query(Order).count() == 0:
+        p1 = db.query(Product).first()
+        sample_order = Order(
+            order_number="ORD-SNITCH-88219",
+            customer_name="Aryan Sharma",
+            customer_email="buyer@snitch.com",
+            status=OrderStatus.SHIPPED,
+            total_amount=2499.0,
+            shipping_fee=0.0,
+            tax_amount=299.0,
+            shipping_address="42 Indiranagar 100ft Rd, Bangalore, 560038",
+            payment_method="CARD",
+            tracking_number="DELHIVERY-AIR-9921"
+        )
+        db.add(sample_order)
+        db.commit()
+        if p1:
+            item = OrderItem(
+                order_id=sample_order.id,
+                product_id=p1.id,
+                product_name=p1.name,
+                size_label="M",
+                quantity=1,
+                unit_price=2499.0,
+                total_price=2499.0
+            )
+            db.add(item)
+            db.commit()
